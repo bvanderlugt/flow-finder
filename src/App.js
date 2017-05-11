@@ -1,52 +1,81 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 import { RiverRow } from './components/RiverRow';
-const rivers = require('../data/rivers.json')
-
-console.log(rivers.rivers)
+import { FormGroup, FormControl, Table } from 'react-bootstrap';
+import { loadRivers } from './lib/riverService'
 
 class App extends Component {
   constructor() {
     super()
     this.state = {
-      rivers: rivers.rivers,
-      currentRiver: ''
+      rivers: [],
+      currentRiver: '',
+      filteredRivers: []
     }
-    this.handleInputChange = this.handleInputChange.bind(this)
   }
 
-  handleInputChange (evt) {
-    this.setState({
-      currentRiver: evt.target.value
+  componentDidMount() {
+    loadRivers()
+      .then(rivers => {
+        this.setState({rivers: rivers,
+                       filteredRivers: rivers})
+      })
+  }
+
+  handleInputChange = (evt) => {
+    // this.setState({
+    //   currentRiver: evt.target.value
+    // })
+    evt.preventDefault()
+    var updatedList = this.state.rivers
+    updatedList = updatedList.filter((item) => {
+      return item['riverName'].toLowerCase().search(
+        evt.target.value.toLowerCase()) !== -1
     })
+
+    this.setState({
+      currentRiver: evt.target.value,
+      filteredRivers: updatedList
+    })
+  }
+
+  handleInputSubmit = (evt) => {
+    evt.preventDefault()
   }
 
   render() {
     return (
       <div className="App">
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <h2>River List</h2>
         </div>
 
         <div className="River-App">
-          <form>
-            <input type="text"
-                   placeholder="Search for a river..."
-                   value={this.state.currentRiver}
-                   onChange={this.handleInputChange}/>
+
+          <form onSubmit={this.handleInputSubmit}>
+            <FormGroup
+              controlId="riverSearch">
+              <FormControl
+                className="River-Search"
+                type="text"
+                placeholder="Search for a river..."
+                value={this.state.currentRiver}
+                onChange={this.handleInputChange}
+              />
+              <FormControl.Feedback />
+            </FormGroup>
           </form>
-          <table>
+          <Table>
             <tbody>
-              {this.state.rivers.map(river => <RiverRow key={river.riverName}
+              {this.state.filteredRivers.map(river => <RiverRow key={river.id}
                                                         RiverName={river.riverName}
                                                         RunName={river.runName}
                                                         ClassType={river.classType}
-                                                        FlowLevel={river.flow.level}
+                                                        FlowLevel={river.flow}
                                                         LastUpdate={river.lastUpdate} />)}
             </tbody>
-          </table>
+          </Table>
         </div>
       </div>
     );

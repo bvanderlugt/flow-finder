@@ -26,9 +26,14 @@
 .River-App {
   padding-top:20px;
   display: inline-block;
-  text-align: left;
+  /*text-align: left;*/
+}
+
+.River-Search {
+  width: 800px
 }
 
 input {
   font-size:20px;
+  margin: 0 auto;
 }
