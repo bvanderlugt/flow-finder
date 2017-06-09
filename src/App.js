@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 // import logo from './logo.svg';
 import './App.css';
-import { RiverRow } from './components/RiverRow';
+import { RiverRow, RiverHeader } from './components';
 import { FormGroup, FormControl, Table } from 'react-bootstrap';
 import { loadRivers } from './lib/riverService'
 
@@ -18,6 +18,7 @@ class App extends Component {
   componentDidMount() {
     loadRivers()
       .then(rivers => {
+        console.log("in component did mount", JSON.stringify(rivers))
         this.setState({rivers: rivers,
                        filteredRivers: rivers})
       })
@@ -68,6 +69,7 @@ class App extends Component {
           </form>
           <Table>
             <tbody>
+              <RiverHeader />
               {this.state.filteredRivers.map(river => <RiverRow key={river.id}
                                                         RiverName={river.riverName}
                                                         RunName={river.runName}
